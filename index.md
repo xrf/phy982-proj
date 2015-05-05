@@ -47,7 +47,7 @@ $$\left(-\frac{1}{2 \mu} \frac{d^2}{d R^2} +
 - complex momenta
 - **finite lifetime**
 
-# all of which correspond to poles in the S-matrix
+# which correspond to poles in the S-matrix
 
 <img width="55%" src="proj-poles.png"/>
 
