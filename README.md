@@ -1,7 +1,7 @@
 PHY982 project
 ==============
 
-**Quick links**: [presentation][p].
+**Quick links**: [presentation][p] ([pdf][f]).
 
 Source code for my [PHY982][1] class project.
 
@@ -38,3 +38,4 @@ Dependencies
 
 [1]: https://people.nscl.msu.edu/~nunes/phy982/phy982web2015.htm
 [p]: https://xrf.github.io/phy982-proj
+[f]: https://xrf.github.io/phy982-proj/proj.pdf
