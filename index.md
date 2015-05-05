@@ -177,3 +177,7 @@ $$u(R) = i^l \sqrt{\frac2\pi} R \sum_k k^2 w_k j_l(k R) \varphi_k$$
 - *How do the states behave asymptotically?*  Accurate asymptotics seems to be hard to obtain in this approach.  Might require a lot more points.
 
 - *How can we do this more efficiently?*  Calculating the momentum matrix elements of $V$ is the dominant expense.  It gets worse as the momentum increases: the integrals become extremely oscillatory.
+
+# Thanks for listening!
+
+[https://github.com/xrf/phy982-proj](https://github.com/xrf/phy982-proj)

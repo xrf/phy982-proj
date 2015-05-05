@@ -1,7 +1,9 @@
 PHY982 project
 ==============
 
-My project for [PHY982][1].
+**Quick links**: [presentation][p].
+
+Source code for my [PHY982][1] class project.
 
 Building
 --------
@@ -35,3 +37,4 @@ Dependencies
   - [Slatec](http://netlib.org/slatec)
 
 [1]: https://people.nscl.msu.edu/~nunes/phy982/phy982web2015.htm
+[p]: https://xrf.github.io/phy982-proj
