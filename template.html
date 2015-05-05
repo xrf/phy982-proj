@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html$if(lang)$ lang="$lang$"$endif$>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+$for(author-meta)$
+  <meta name="author" content="$author-meta$" />
+$endfor$
+$if(date-meta)$
+  <meta name="dcterms.date" content="$date-meta$" />
+$endif$
+  <title>$if(title-prefix)$$title-prefix$ - $endif$$pagetitle$</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="$revealjs-url$/css/reveal.css"/>
+  <!-- <style>code{white-space: pre;}</style> -->
+  <link rel="stylesheet" href="$revealjs-url$/lib/css/zenburn.css">
+$if(css)$
+$for(css)$
+  <link rel="stylesheet" href="$css$"/>
+$endfor$
+$else$
+  <link rel="stylesheet" href="$revealjs-url$/css/theme/$if(theme)$$theme$$else$simple$endif$.css" id="theme">
+$endif$
+  <!-- my custom styles -->
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Robot:400,700,400italic,700italic);
+    .reveal { font-family: Roboto, Lato, Helvetica, Arial, sans-serif; font-size: 32px; }
+    .reveal h1 { font-size: 2em; text-transform: none; }
+    .reveal h2 { font-size: 1.4em; text-transform: none; }
+    .reveal section img { border: none; box-shadow: none; }
+    .slides footer { position: absolute; left: 0; bottom: 0; }
+    #msu-logo { left: 30%; position: relative; }
+  </style>
+  <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+  <script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = '$revealjs-url$/css/print/pdf.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+  </script>
+  <!--[if lt IE 9]>
+  <script src="$revealjs-url$/lib/js/html5shiv.js"></script>
+  <![endif]-->
+$for(header-includes)$
+  $header-includes$
+$endfor$
+</head>
+<body>
+$for(include-before)$
+$include-before$
+$endfor$
+  <div class="reveal">
+    <div class="slides">
+
+$if(title)$
+<section>
+    <h1 class="title">$title$</h1>
+$if(subtitle)$
+  <h1 class="subtitle">$subtitle$</h1>
+$endif$
+$for(author)$
+    <h2 class="author">$author$</h2>
+$endfor$
+    <h3 class="date">$date$</h3>
+</section>
+$endif$
+$if(toc)$
+<section id="$idprefix$TOC">
+$toc$
+</section>
+$endif$
+
+$body$
+      <style>
+      </style>
+      <footer>
+        <img id="nscl-logo" width="9%" src="bg-nscl-logo.png"/>
+        <img id="msu-logo" width="50%" src="bg-msu-logo.png"/>
+      </footer>
+    </div>
+  </div>
+
+  <script src="$revealjs-url$/lib/js/head.min.js"></script>
+  <script src="$revealjs-url$/js/reveal.js"></script>
+
+  <script>
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+
+      // Display controls in the bottom right corner
+      controls: true,
+
+      // Display a presentation progress bar
+      progress: true,
+
+      // Display the page number of the current slide
+      slideNumber: false,
+
+      // Push each slide change to the browser history
+      history: true,
+
+      // Enable keyboard shortcuts for navigation
+      keyboard: true,
+
+      // Enable the slide overview mode
+      overview: true,
+
+      // Vertical centering of slides
+      center: true,
+
+      // Enables touch navigation on devices with touch input
+      touch: true,
+
+      // Loop the presentation
+      loop: false,
+
+      // Change the presentation direction to be RTL
+      rtl: false,
+
+      // Turns fragments on and off globally
+      fragments: true,
+
+      // Flags if the presentation is running in an embedded mode,
+      // i.e. contained within a limited portion of the screen
+      embedded: false,
+
+      // Flags if we should show a help overlay when the questionmark
+      // key is pressed
+      help: true,
+
+      // Number of milliseconds between automatically proceeding to the
+      // next slide, disabled when set to 0, this value can be overwritten
+      // by using a data-autoslide attribute on your slides
+      autoSlide: 0,
+
+      // Stop auto-sliding after user input
+      autoSlideStoppable: true,
+
+      // Enable slide navigation via mouse wheel
+      mouseWheel: false,
+
+      // Hides the address bar on mobile devices
+      hideAddressBar: true,
+
+      // Opens links in an iframe preview overlay
+      previewLinks: false,
+
+      // Transition style
+      transition: $if(transition)$'$transition$'$else$Reveal.getQueryHash().transition || 'default'$endif$, // none/fade/slide/convex/concave/zoom
+
+      // Transition speed
+      transitionSpeed: 'fast', // default/fast/slow
+
+      // Transition style for full page slide backgrounds
+      backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+      // Number of slides away from the current that are visible
+      viewDistance: 3,
+
+      // Parallax background image
+      parallaxBackgroundImage: '', // e.g. "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
+
+      // Parallax background size
+      parallaxBackgroundSize: '', // CSS syntax, e.g. "2100px 900px"
+
+      // Optional libraries used to extend on reveal.js
+      dependencies: [
+
+        // Cross-browser shim that fully implements classList - https://github.com/eligrey/classList.js/
+        { src: '$revealjs-url$/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+
+$if(math)$
+        // MathJax
+        { src: '$revealjs-url$/plugin/math/math.js', async: true },
+$endif$
+
+        // Syntax highlight for code elements
+        { src: '$revealjs-url$/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+
+        // Zoom in and out with Alt+click
+        { src: '$revealjs-url$/plugin/zoom-js/zoom.js', async: true },
+
+        // Speaker notes
+        { src: '$revealjs-url$/plugin/notes/notes.js', async: true }
+
+      ]
+    });
+  </script>
+  $for(include-after)$
+  $include-after$
+  $endfor$
+  </body>
+</html>

@@ -1,0 +1,40 @@
+index.html
+proj-*.png
+!proj-completeness.png
+!proj-poles.png
+reveal.js
+
+# generic
+.\#*
+.nfs????
+*~
+*.bak
+*.dat
+*.log
+*.tmp
+
+# native
+a.out
+*.a
+*.dll
+*.dylib
+*.exe
+*.gch
+*.ipch
+*.lib
+*.o
+*.obj
+*.so
+*.sdf
+*.stackdump
+
+# Python
+*.npy
+*.pyc
+
+# TeX
+*.aux
+*.bbl
+*.blg
+*.thm
+*.toc
