@@ -13,15 +13,15 @@ run: proj.py libproj.so
 clean:
 	rm -fr dist *.o
 
-# this sed script probably only works on GNU sed
+# probably only works on GNU sed
 update-makefile:
+	$(CC) >Makefile.insert.tmp -MM $(objs:.o=.c)
+	cp Makefile Makefile.bak
 	a='^# AUTO-GENERATED BEGIN$$' && \
 	z='^# AUTO-GENERATED END$$' && \
 	p="/$$a/,/$$z/{/$$a/{p;r Makefile.insert.tmp\n};/$$z/p;d}" && \
 	p=`printf "$$p"` && \
-	gcc >Makefile.insert.tmp -MM $(objs:.o=.c) && \
-	cp Makefile Makefile.bak && \
-	sed -i "$$p" Makefile && \
+	sed -i "$$p" Makefile
 	rm Makefile.insert.tmp
 
 .PHONY: all clean run update-makefile
