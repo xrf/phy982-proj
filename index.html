@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="reveal.js//css/reveal.css"/>
+  <!-- <style>code{white-space: pre;}</style> -->
+  <link rel="stylesheet" href="reveal.js//lib/css/zenburn.css">
+  <link rel="stylesheet" href="reveal.js//css/theme/white.css" id="theme">
+  <!-- my custom styles -->
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Robot:400,700,400italic,700italic);
+    .reveal { font-family: Roboto, Lato, Helvetica, Arial, sans-serif; font-size: 32px; }
+    .reveal h1 { font-size: 2em; text-transform: none; }
+    .reveal h2 { font-size: 1.4em; text-transform: none; }
+    .reveal section img { border: none; box-shadow: none; }
+    .slides footer { position: absolute; left: 0; bottom: 0; }
+    #msu-logo { left: 30%; position: relative; }
+  </style>
+  <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+  <script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = 'reveal.js//css/print/pdf.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js//lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+
+<section id="the-berggren-basis-in-elastic-scattering" class="slide level1">
+<h1>The Berggren basis in elastic scattering</h1>
+<p><small style="font-size: 80%">Fei Yuan</p>
+<p><em>PHY982 Project</em></p>
+<p>2015-05-05</small></p>
+</section>
+<section id="lets-set-up-the-problem" class="slide level1">
+<h1>Let's set up the problem</h1>
+<ul>
+<li>2 particles in relative frame</li>
+<li>short-ranged interaction</li>
+<li>spherical symmetry</li>
+</ul>
+<p>With partial wave decomposition:</p>
+<p><span class="math">\[\left(-\frac{1}{2 \mu} \frac{d^2}{d R^2} +
+\frac{l (l + 1)}{2 \mu R^2} + V(R)\right) u(R) = E u(R)\]</span></p>
+<p><em>What kinds of solutions would you expect?</em></p>
+</section>
+<section id="there-are-bound-states" class="slide level1">
+<h1>There are bound states</h1>
+<ul>
+<li><span class="math">\(u \to 0\)</span></li>
+<li>discrete spectrum</li>
+<li>normalizable</li>
+<li>imaginary momenta</li>
+</ul>
+<p><small>(of course, they only exist if the interaction is sufficiently attractive)</small></p>
+</section>
+<section id="and-scattering-states" class="slide level1">
+<h1>and scattering states</h1>
+<p><em>(a.k.a. &quot;continuum states&quot;)</em></p>
+<p><em>one of the main topics of this class</em></p>
+<ul>
+<li><span class="math">\(u \to e^{\pm i k x}\)</span></li>
+<li>continuous spectrum</li>
+<li><em>not</em> normalizable</li>
+<li>real momenta</li>
+</ul>
+</section>
+<section id="but-also-resonance-states" class="slide level1">
+<h1>but also resonance states</h1>
+<ul>
+<li><span class="math">\(u \to e^{i (\pm k - i \kappa) x}\)</span></li>
+<li>discrete spectrum</li>
+<li>not normalizable</li>
+<li>complex momenta</li>
+<li><strong>finite lifetime</strong></li>
+</ul>
+</section>
+<section id="which-correspond-to-poles-in-the-s-matrix" class="slide level1">
+<h1>which correspond to poles in the S-matrix</h1>
+<p><img width="55%" src="proj-poles.png"/></p>
+</section>
+<section id="how-do-they-relate-to-each-other-newton-completeness-relation" class="slide level1">
+<h1>How do they relate to each other? <i>Newton completeness relation</i>*</h1>
+<p><em>any state is a linear combination of bound and scattering states</em></p>
+<p><span class="math">\[\sum_{k \in \text{bound}} |\varphi_k\rangle \langle \varphi_k|
++ \int_0^\infty k^2 d k\, |\varphi(k)\rangle \langle \varphi(k)| = \hat 1\]</span></p>
+<p>but what about resonance states?</p>
+<p><small>*<a href="https://books.google.com/books?id=uYmtAQAAQBAJ">R. G. Newton, <i>Scattering Theory of Waves and Particles</i></a></small></p>
+</section>
+<section id="what-if-we-deform-the-contour" class="slide level1">
+<h1>What if we deform the contour?</h1>
+<p><img width="55%" src="proj-completeness.png"/></p>
+</section>
+<section id="we-then-obtain-the-berggren-completeness-relation" class="slide level1">
+<h1>We then obtain the <i>Berggren completeness relation</i>*</h1>
+<p><span class="math">\[\sum_{k \in \text{enclosed b+d}} |\varphi_k\rangle \langle \varphi_k|
++ \int_{\mathrm L_+} k^2 d k\, |\varphi(k)\rangle \langle \varphi(k)| = \hat 1\]</span></p>
+<p>The discrete sum is over all the poles enclosed by the contour on the upper half plane, which includes bound and resonance states.</p>
+<p><small>*<a href="http://doi.org/10.1016/0375-9474%2868%2990593-9">T. Berggren, <i>Nucl. Phys. A</i> <b>109</b> (1968) 265.</a></small></p>
+</section>
+<section id="and-hence-the-berggren-basis" class="slide level1">
+<h1>and hence the <i>Berggren basis</i></h1>
+<p><strong>What do we get?</strong></p>
+<ul>
+<li>bound, scattering, <em>and resonance</em> states</li>
+</ul>
+<p><strong>What's the price?</strong></p>
+<ul>
+<li>complex energies; <span class="math">\(H\)</span> is no longer hermitian!</li>
+<li>integral divergence (worse than scattering)</li>
+</ul>
+</section>
+<section id="example-in-free-space" class="slide level1">
+<h1>Example in free space</h1>
+<p><img width="55%" src="proj-bessel.png"/></p>
+</section>
+<section id="but-its-not-that-bad" class="slide level1">
+<h1>But it's not that bad</h1>
+<ul>
+<li>formally, can use nonhermitian quantum mechanics with a rigged Hilbert space (not as crazy as it sounds)</li>
+<li>regularization techniques to fix the integral:
+<ul>
+<li>Gaussian regularization (<span class="math">\(e^{-\varepsilon R^2}\)</span>, then take limit as <span class="math">\(\varepsilon \to 0\)</span>)</li>
+<li>complex scaling (rotate the contour until it becomes well-behaved)</li>
+</ul></li>
+</ul>
+</section>
+<section id="so-about-that-scattering-problem" class="slide level1">
+<h1>So about that scattering problem…</h1>
+<p>Let's find the Berggren states of the <sup>11</sup>Be system studied in homework 1.</p>
+<p>We will use <strong>basis expansion</strong> and we will solve this in momentum space (which is quite natural for Berggren states).</p>
+</section>
+<section id="heres-the-momentum-space-schrödinger-equation" class="slide level1">
+<h1>Here's the momentum-space Schrödinger equation</h1>
+<p>(can be derived by taking a Fourier transform)</p>
+<p><span class="math">\[\frac{k^2}{2 \mu} \varphi(k) + \int_0^\infty \kappa^2 d \kappa\, V(k, \kappa) \varphi(\kappa) = E \varphi(k)\]</span></p>
+<p>where <span class="math">\(V(k, \kappa) \equiv \frac2\pi \int_0^\infty R^2 d R\, j_l(k R) V(R) j_l(\kappa R)\)</span></p>
+</section>
+<section id="then-we-discretize-the-continuum" class="slide level1">
+<h1>Then we discretize the continuum</h1>
+<p><span class="math">\[\frac{k^2}{2 \mu} \varphi_k + \sum_\kappa \kappa^2 w_\kappa V_{k \kappa} \varphi_\kappa = E \varphi_k\]</span></p>
+<p>Points may be chosen via a quadrature scheme with weights <span class="math">\(w_\kappa\)</span>.</p>
+<p>We'll use Gauss-Legendre here.</p>
+</section>
+<section id="and-obtain-an-eigenvalue-problem" class="slide level1">
+<h1>and obtain an eigenvalue problem</h1>
+<p>which we can plug into Lapack or something</p>
+<p><span class="math">\[\sum_\kappa H_{k \kappa} \varphi_\kappa = E \varphi_k\]</span></p>
+<p>where <span class="math">\(H_{k \kappa} = \frac{k^2}{2 \mu} \delta_{k \kappa} + \kappa^2 w_\kappa V_{k \kappa}\)</span></p>
+</section>
+<section id="how-do-we-recover-the-position-space-wavefunction" class="slide level1">
+<h1>How do we recover the position-space wavefunction?</h1>
+<p>Just do a Hankel transform:</p>
+<p><span class="math">\[u(R) = i^l \sqrt{\frac2\pi} R \sum_k k^2 w_k j_l(k R) \varphi_k\]</span></p>
+</section>
+<section id="what-does-the-contour-look-like" class="slide level1">
+<h1>What does the contour look like?</h1>
+<p><img width="85%" src="proj-contour.png"/></p>
+</section>
+<section id="recall-from-our-first-homework" class="slide level1">
+<h1>Recall from our first homework</h1>
+<p><img width="85%" src="proj-atan.png"/></p>
+</section>
+<section id="do-we-get-the-right-answer" class="slide level1">
+<h1>Do we get the right answer?</h1>
+<p><img width="60%" src="proj-l2.png"/></p>
+</section>
+<section id="how-well-does-it-converge-i" class="slide level1">
+<h1>How well does it converge? (I)</h1>
+<p><img width="60%" src="proj-convergence-count.png"/></p>
+</section>
+<section id="how-well-does-it-converge-ii" class="slide level1">
+<h1>How well does it converge? (II)</h1>
+<p><img width="60%" src="proj-convergence-height.png"/></p>
+<!-- converges extremely fast w.r.t. k_max (>= 3 is enough) -->
+<!-- converges extremely fast w.r.t. R_max (>= 30 is enough) -->
+<!-- mostly insensitive (< 1e-9 fluctuation) to k_b -->
+</section>
+<section id="what-does-the-state-look-like" class="slide level1">
+<h1>What does the state look like?</h1>
+<p><img width="60%" src="proj-l2-resonance.png"/></p>
+</section>
+<section id="there-are-bound-states-too" class="slide level1">
+<h1>There are bound states too!</h1>
+<p>(in <span class="math">\(l = 0\)</span>)</p>
+<p><img width="60%" src="proj-l0.png"/></p>
+</section>
+<section id="what-do-those-look-like" class="slide level1">
+<h1>What do those look like?</h1>
+<p><img width="60%" src="proj-l0-bound.png"/></p>
+</section>
+<section id="unanswered-questions" class="slide level1">
+<h1>Unanswered questions…</h1>
+<ul>
+<li><p><em>How do the states behave asymptotically?</em> Accurate asymptotics seems to be hard to obtain in this approach. Might require a lot more points.</p></li>
+<li><p><em>How can we do this more efficiently?</em> Calculating the momentum matrix elements of <span class="math">\(V\)</span> is the dominant expense. It gets worse as the momentum increases: the integrals become extremely oscillatory.</p></li>
+</ul>
+</section>
+<section id="thanks-for-listening" class="slide level1">
+<h1>Thanks for listening!</h1>
+<p><a href="https://github.com/xrf/phy982-proj" class="uri">https://github.com/xrf/phy982-proj</a></p>
+</section>
+      <style>
+      </style>
+      <footer>
+        <img id="nscl-logo" width="9%" src="bg-nscl-logo.png"/>
+        <img id="msu-logo" width="50%" src="bg-msu-logo.png"/>
+      </footer>
+    </div>
+  </div>
+
+  <script src="reveal.js//lib/js/head.min.js"></script>
+  <script src="reveal.js//js/reveal.js"></script>
+
+  <script>
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+
+      // Display controls in the bottom right corner
+      controls: true,
+
+      // Display a presentation progress bar
+      progress: true,
+
+      // Display the page number of the current slide
+      slideNumber: false,
+
+      // Push each slide change to the browser history
+      history: true,
+
+      // Enable keyboard shortcuts for navigation
+      keyboard: true,
+
+      // Enable the slide overview mode
+      overview: true,
+
+      // Vertical centering of slides
+      center: true,
+
+      // Enables touch navigation on devices with touch input
+      touch: true,
+
+      // Loop the presentation
+      loop: false,
+
+      // Change the presentation direction to be RTL
+      rtl: false,
+
+      // Turns fragments on and off globally
+      fragments: true,
+
+      // Flags if the presentation is running in an embedded mode,
+      // i.e. contained within a limited portion of the screen
+      embedded: false,
+
+      // Flags if we should show a help overlay when the questionmark
+      // key is pressed
+      help: true,
+
+      // Number of milliseconds between automatically proceeding to the
+      // next slide, disabled when set to 0, this value can be overwritten
+      // by using a data-autoslide attribute on your slides
+      autoSlide: 0,
+
+      // Stop auto-sliding after user input
+      autoSlideStoppable: true,
+
+      // Enable slide navigation via mouse wheel
+      mouseWheel: false,
+
+      // Hides the address bar on mobile devices
+      hideAddressBar: true,
+
+      // Opens links in an iframe preview overlay
+      previewLinks: false,
+
+      // Transition style
+      transition: 'fade', // none/fade/slide/convex/concave/zoom
+
+      // Transition speed
+      transitionSpeed: 'fast', // default/fast/slow
+
+      // Transition style for full page slide backgrounds
+      backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+      // Number of slides away from the current that are visible
+      viewDistance: 3,
+
+      // Parallax background image
+      parallaxBackgroundImage: '', // e.g. "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
+
+      // Parallax background size
+      parallaxBackgroundSize: '', // CSS syntax, e.g. "2100px 900px"
+
+      // Optional libraries used to extend on reveal.js
+      dependencies: [
+
+        // Cross-browser shim that fully implements classList - https://github.com/eligrey/classList.js/
+        { src: 'reveal.js//lib/js/classList.js', condition: function() { return !document.body.classList; } },
+
+        // MathJax
+        { src: 'reveal.js//plugin/math/math.js', async: true },
+
+        // Syntax highlight for code elements
+        { src: 'reveal.js//plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+
+        // Zoom in and out with Alt+click
+        { src: 'reveal.js//plugin/zoom-js/zoom.js', async: true },
+
+        // Speaker notes
+        { src: 'reveal.js//plugin/notes/notes.js', async: true }
+
+      ]
+    });
+  </script>
+    </body>
+</html>
