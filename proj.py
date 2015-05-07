@@ -6,6 +6,13 @@ import scipy as sp
 import scipy.special as sps
 from numpy import abs, exp, pi, sqrt
 
+def mkdirs(path):
+    import os
+    try:
+        os.makedirs(path)
+    except OSError:
+        pass
+
 def signature(*args, **kwargs):
     import base64, hashlib, pickle
     return base64.b32encode(hashlib.sha1(
@@ -20,7 +27,9 @@ def cached(name_template, load, dump):
                 return load(fn)
             except OSError:
                 pass
+            import os
             result = func(*args, **kwargs)
+            mkdirs(os.path.dirname(fn))
             dump(fn, result)
             return result
         return go
@@ -124,7 +133,7 @@ def V_eff(V, l, mu2):
     return lambda R: l * (l + 1) / R ** 2 / mu2 + V(R)
 
 libproj = ctypes.cdll.LoadLibrary("./libproj.so")
-@cached("v-matrix-{0}.npy", np.load, np.save)
+@cached(__file__ + ".cache/v-matrix/{0}.npy", np.load, np.save)
 def calc_V_matrix(k, l, ws, R_max, abs_err, rel_err, limit):
     print("generating V matrix...")
     Vm = np.empty((len(k), len(k)), dtype=complex)
@@ -141,7 +150,7 @@ def calc_V_matrix(k, l, ws, R_max, abs_err, rel_err, limit):
     print("done.")
     return Vm
 
-@cached("bessel-matrix-{0}.npy", np.load, np.save)
+@cached(__file__ + ".cache/bessel-matrix/{0}.npy", np.load, np.save)
 def calc_bessel_matrix(k, l, R):
     print("generating Bessel function matrix...")
     len_R = len(R)
@@ -282,5 +291,5 @@ mu2 = 0.0478450                # 1/(MeV*fm^2)
 V   = get_woods_saxon(ws)
 
 simple_run()
-convergence_run1()
-convergence_run2()
+#convergence_run1()
+#convergence_run2()
