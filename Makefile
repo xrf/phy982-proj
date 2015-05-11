@@ -11,7 +11,7 @@ run: proj.py libproj.so
 	./proj.py
 
 clean:
-	rm -fr dist *.o
+	rm -fr dist index.html paper.pdf *.o
 
 # probably only works on GNU sed
 update-makefile:
