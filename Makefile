@@ -1,11 +1,11 @@
 .POSIX:
 .SUFFIXES:
-.SUFFIXES: .c .o .png .svg
+.SUFFIXES: .c .o .pdf .png .svg
 
 CFLAGS=-Wall -fPIC -g -O2 -std=c99
 LIBS=-lm -lslatec
 
-all: index.html
+all: index.html paper.pdf
 
 run: proj.py libproj.so
 	./proj.py
@@ -32,8 +32,30 @@ update-makefile:
 .svg.png:
 	inkscape -D -d 300 -e $@ $<
 
+.svg.pdf:
+	inkscape -D -z -A $@ $<
+
+paper.pdf: \
+    paper.tex \
+    paper.bib \
+    proj-atan.pdf \
+    proj-contour.pdf \
+    proj-completeness.pdf \
+    proj-convergence-count.pdf \
+    proj-convergence-height.pdf \
+    proj-l0-bound.pdf \
+    proj-l0.pdf \
+    proj-l2-resonance.pdf \
+    proj-l2-resonance-asymptotic.pdf \
+    proj-l2.pdf \
+    proj-poles.pdf \
+    texc
+	./texc --silent $(@:.pdf=) proj-*.pdf
+
 mathjax=https://cdn.mathjax.org/mathjax/latest/MathJax.js
 index.html: \
+    index.md \
+    template.html \
     proj-atan.png \
     proj-bessel.png \
     proj-contour.png \
@@ -45,13 +67,13 @@ index.html: \
     proj-l2-resonance.png \
     proj-l2.png \
     proj-poles.png \
-    reveal.js/css/reveal.css
+    reveal.js/js/reveal.js
 	pandoc -s -t revealjs --section-divs --no-highlight \
 	--mathjax=$(mathjax)?config=TeX-AMS-MML_HTMLorMML \
 	--template template.html -V theme:white -V transition:fade \
 	-V revealjs-url:reveal.js/ -o $@ index.md
 
-reveal.js/css/reveal.css: reveal.js.tar.gz
+reveal.js/js/reveal.js: reveal.js.tar.gz
 	tar xmzf reveal.js.tar.gz
 
 objs=proj.o bessel.o gauss_kronrod.o xmalloc.o
