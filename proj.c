@@ -45,19 +45,16 @@ void generate_v_matrix(double_complex *v, const double_complex *k,
 {
     unsigned total_num_eval = 0;
     for (size_t i = 0; i != k_len; ++i)
-    for (size_t j = 0; j != k_len; ++j) {
-        const struct integrand_params p = {
-            .l  = l,
-            .k1 = k[i],
-            .k2 = k[j],
-            .ws = &ws
-        };
+    for (size_t j = i; j != k_len; ++j) {
+        const struct integrand_params p = {l, k[i], k[j], &ws};
         double est_err;
         unsigned num_eval;
         const double_complex integral =
-            gk_cquad(integrand, &p, 0, r_max,
-                     abs_err, rel_err, limit, &est_err, &num_eval);
-        v[i * k_len + j] = 2 / M_PI * integral;
+            gk_cquad(integrand, &p, 0, r_max, abs_err, rel_err,
+                     limit, &est_err, &num_eval);
+        const double_complex element = 2 / M_PI * integral;
+        v[i * k_len + j] = element;
+        v[j * k_len + i] = element;
         if (!(est_err < dmax(abs_err, rel_err * cabs(integral)))) {
             fprintf(stderr, "WARNING: integral did not converge: "
                     "%i evals; error is %g, required %g\n",
