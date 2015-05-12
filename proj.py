@@ -22,7 +22,7 @@ def cached(name_template, load, dump):
                                       .decode("latin-1"))
             try:
                 return load(fn)
-            except OSError:
+            except IOError:
                 pass
             import os
             result = func(*args, **kwargs)
@@ -157,8 +157,10 @@ def V_eff(V, l, mu2):
 libproj = ctypes.cdll.LoadLibrary("./libproj.so")
 @cached(__file__ + ".cache/v-matrix/{0}.npy", np.load, np.save)
 def calc_V_matrix(k, l, ws, R_max, abs_err, rel_err, limit):
+    import timeit
     import numpy as np
     print("generating V matrix...")
+    t0 = timeit.default_timer()
     Vm = np.empty((len(k), len(k)), dtype=complex)
     run_interruptibly(lambda: libproj.generate_v_matrix(*(
         ctypes_matrix(Vm)[:1] +
@@ -170,19 +172,22 @@ def calc_V_matrix(k, l, ws, R_max, abs_err, rel_err, limit):
          ctypes.c_double(rel_err),
          ctypes.c_uint(limit))
     )))
-    print("done.")
+    print("done ({0:.4} s).".format(timeit.default_timer() - t0))
     return Vm
 
 @cached(__file__ + ".cache/bessel-matrix/{0}.npy", np.load, np.save)
 def calc_bessel_matrix(k, l, R):
+    import timeit
     import numpy as np
     print("generating Bessel function matrix...")
+    t0 = timeit.default_timer()
     len_R = len(R)
     len_k = len(k)
     Jm = np.empty((len_R, len_k), dtype=complex)
     for i in range(len_R):
         for j in range(len_k):
             Jm[i, j] = bessel_j(l, k[j] * R[i])
+    print("done ({0:.4} s).".format(timeit.default_timer() - t0))
     print("done.")
     return Jm
 
