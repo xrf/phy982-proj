@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-import ctypes
+import ctypes, itertools, multiprocessing
 import matplotlib.pyplot as plt
 import numpy as np
+
+libproj = ctypes.cdll.LoadLibrary("./libproj.so")
 
 def mkdirs(path):
     import os
@@ -122,24 +124,38 @@ def run_interruptibly(func):
 
 def ctypes_vector(x):
     '''Marshal a vector into C.'''
-    import ctypes
-    assert x.dtype in (float, complex)
+    import ctypes, numpy
+    if x is None:
+        return (ctypes.POINTER(ctypes.c_double)(), ctypes.c_size_t(0))
+    assert x.dtype in (float, numpy.float64, complex, numpy.complex128)
     assert len(x.shape) == 1
     return (
         x.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
         ctypes.c_size_t(x.shape[0]),
     )
 
-def ctypes_matrix(x):
+def ctypes_matrix(x, with_stride=False):
     '''Marshal a matrix into C.'''
-    import ctypes
-    assert x.dtype in (float, complex)
+    import ctypes, numpy
+    if x is None:
+        return (
+            (ctypes.POINTER(ctypes.c_double)(),) +
+            ((ctypes.c_size_t(0),) if with_stride else ()) +
+            (ctypes.c_size_t(0),
+             ctypes.c_size_t(0))
+        )
+    assert x.dtype in (float, numpy.float64, complex, numpy.complex128)
     assert len(x.shape) == 2
+    # if stride isn't specified then it must have a natural stride
+    assert with_stride or x.strides[0] == x.shape[1] * x.itemsize
+    assert x.strides[1] == x.itemsize
     assert x.flags["C_CONTIGUOUS"]
     return (
-        x.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),
-        ctypes.c_size_t(x.shape[0]),
-        ctypes.c_size_t(x.shape[1]),
+        (x.ctypes.data_as(ctypes.POINTER(ctypes.c_double)),) +
+        ((ctypes.c_size_t(x.strides[0] // x.itemsize),)
+         if with_stride else ()) +
+        (ctypes.c_size_t(x.shape[0]),
+         ctypes.c_size_t(x.shape[1]))
     )
 
 # ----------------------------------------------------------------------------
@@ -158,17 +174,17 @@ def get_woods_saxon(ws):
 def V_eff(V, l, mu2):
     return lambda R: l * (l + 1) / R ** 2 / mu2 + V(R)
 
-libproj = ctypes.cdll.LoadLibrary("./libproj.so")
-@cached(__file__ + ".cache/v-matrix/{0}.npy", np.load, np.save)
-def calc_V_matrix(k, l, ws, R_max, abs_err, rel_err, limit):
-    import timeit
-    import numpy as np
-    print("generating V matrix...")
-    t0 = timeit.default_timer()
-    Vm = np.empty((len(k), len(k)), dtype=complex)
-    run_interruptibly(lambda: libproj.generate_v_matrix(*(
-        ctypes_matrix(Vm)[:1] +
-        ctypes_vector(k) +
+def calc_V_matrix_chunk(args):
+    import numpy
+    k1, k2, l, ws, R_max, abs_err, rel_err, limit = args
+    len_k2 = len(k2) if k2 is not None else len(k1)
+    V = numpy.empty((len(k1), len_k2), dtype=complex)
+    c_generate = libproj.generate_v_matrix
+    c_generate.restype = ctypes.c_uint
+    num_eval = run_interruptibly(lambda: c_generate(*(
+        ctypes_matrix(V, with_stride=True)[:2] +
+        ctypes_vector(k1) +
+        ctypes_vector(k2) +
         (ctypes.c_uint(l),
          ws,
          ctypes.c_double(R_max),
@@ -176,8 +192,58 @@ def calc_V_matrix(k, l, ws, R_max, abs_err, rel_err, limit):
          ctypes.c_double(rel_err),
          ctypes.c_uint(limit))
     )))
-    print("done ({0:.4} s).".format(timeit.default_timer() - t0))
-    return Vm
+    return (V, num_eval)
+
+def calc_V_matrix(pool=None, chunk_size=4):
+    '''Calculate the V matrix by subdividing it into chunks and running the
+    calculation in parallel.  The `chunk_size` argument determines the minimum
+    number of rows or columns per chunk.'''
+    if pool:
+        pmap = pool.imap
+    else:
+        pmap = map
+    @cached(__file__ + ".cache/v-matrix/{0}.npy", np.load, np.save)
+    def self(k, l, ws, R_max, abs_err, rel_err, limit):
+        import itertools, timeit, sys
+        import numpy
+
+        # start
+        sys.stdout.write("generating V matrix... ")
+        sys.stdout.flush()
+        t0 = timeit.default_timer()
+
+        # build the chunk indices
+        len_k = len(k)
+        if not len_k:  # we don't support zero sizes so handle them here first
+            return numpy.empty((0, 0), dtype=complex)
+        indices = numpy.array_split(numpy.arange(len_k),
+                                    max(1, len_k // chunk_size))
+        biindices = tuple(itertools.combinations_with_replacement(indices, 2))
+
+        # run calculations in process pool
+        result = pmap(calc_V_matrix_chunk,
+                      ((k[i1], k[i2] # include k[i2] only on off-diagonal chunks
+                        if i1[0] != i2[0] else None,
+                        l, ws, R_max, abs_err, rel_err, limit)
+                       for (i1, i2) in biindices))
+
+        # collect results, making use of symmetry
+        V = numpy.empty((len_k, len_k), dtype=complex)
+        total_num_eval = 0
+        for (i1, i2), (subV, num_eval) in zip(biindices, result):
+            total_num_eval += num_eval
+            V[i1[0]:(i1[-1] + 1),
+              i2[0]:(i2[-1] + 1)] = subV
+            if not i1[0] == i2[0]:      # off-diagonal
+                V[i2[0]:(i2[-1] + 1),
+                  i1[0]:(i1[-1] + 1)] = subV.T
+
+        # finish
+        print("done ({0:.4} s, {1} V(r) evaluations)."
+              .format(timeit.default_timer() - t0, total_num_eval))
+        return V
+
+    return self
 
 def plot_bessel():
     import numpy as np
@@ -201,11 +267,11 @@ def plot_interactions(V, l_range, mu2):
 
 def solve(mu2, ws, l, R_max, count, k_start, ka, kb, k_max,
           abs_err=1e-8, rel_err=1e-8, gk_limit=50,
-          node_generator=gauss_legendre_nodes):
+          node_generator=gauss_legendre_nodes, pool=None):
     import numpy as np
     from numpy import sqrt
     k, w = triangle_curve(k_start, k_max, ka, kb, count, node_generator)
-    Vm = calc_V_matrix(k, l, ws, R_max, abs_err, rel_err, gk_limit)
+    Vm = calc_V_matrix(pool=pool)(k, l, ws, R_max, abs_err, rel_err, gk_limit)
     Hm = np.empty((count, count), dtype=complex)
     for i in range(count):
         for j in range(count):
@@ -222,7 +288,7 @@ def find_closest(target, array):
 
 # ----------------------------------------------------------------------------
 
-def simple_run():
+def simple_run(pool=None):
     import numpy as np
     from numpy import abs, pi, sqrt
     k, w, Es, phis = solve(
@@ -235,6 +301,7 @@ def simple_run():
         ka       =  1. - .3j,
         kb       =  2.,
         k_max    = 10.,
+        pool     = pool,
     )
 
     print("energies:")
@@ -262,7 +329,7 @@ def simple_run():
 
     return fig1, fig2
 
-def convergence_run1():
+def convergence_run1(pool=None):
     import matplotlib.cm as cm
     import numpy as np
     from numpy import sqrt
@@ -280,6 +347,7 @@ def convergence_run1():
             ka       =  1. - .3j,
             kb       =  2.,
             k_max    = 10.,
+            pool     = pool,
         )
         ek = sqrt(mu2 * Es + 0j)
         axes.scatter(ek.real, ek.imag, 50, color=c,
@@ -287,7 +355,7 @@ def convergence_run1():
     axes.legend()
     return fig
 
-def convergence_run2():
+def convergence_run2(pool=None):
     import numpy as np
     from numpy import abs, sqrt
     fig, axes = simple_figure()
@@ -305,6 +373,7 @@ def convergence_run2():
             ka       =  .25 - x * 1j,
             kb       =  2.,
             k_max    =  6.,
+            pool     = pool,
         )
         ek = sqrt(mu2 * Es + 0j)
         k = find_closest(0.254003 - 0.0105314j, ek)
@@ -325,7 +394,10 @@ l   = 2
 mu2 = 0.0478450                # 1/(MeV*fm^2)
 V   = get_woods_saxon(ws)
 
-simple_figs = simple_run()
-convergence_fig1 = convergence_run1()
-convergence_fig2 = convergence_run2()
+pool = multiprocessing.Pool()
+print("note: using {0} threads.".format(multiprocessing.cpu_count()))
+
+simple_figs = simple_run(pool=pool)
+convergence_fig1 = convergence_run1(pool=pool)
+convergence_fig2 = convergence_run2(pool=pool)
 plt.show()
