@@ -32,15 +32,17 @@ def cached(name_template, load, dump):
         return go
     return go
 
-import scipy.special as sps
 def bessel_j(l, z):
     '''Spherical Bessel function of the first kind'''
-    z = complex(z.real, z.imag)
-    return sps.sph_jn(l, z)[0][-1]
-
-def map_bessel_j(l, zs):
-    import numpy as np
-    return np.array([bessel_j(l, z) for z in zs])
+    import numpy
+    j = numpy.asanyarray(z, dtype=complex).flatten()
+    run_interruptibly(lambda: libproj.spherical_bessel_jl_many(*(
+        (ctypes_vector(j)[0], ctypes.c_double(l)) +
+        ctypes_vector(j)
+    )))
+    if isinstance(j, numpy.ndarray):
+        j = j.reshape(z.shape)
+    return j
 
 def simple_figure():
     import matplotlib.pyplot as plt
@@ -175,29 +177,13 @@ def calc_V_matrix(k, l, ws, R_max, abs_err, rel_err, limit):
     print("done ({0:.4} s).".format(timeit.default_timer() - t0))
     return Vm
 
-@cached(__file__ + ".cache/bessel-matrix/{0}.npy", np.load, np.save)
-def calc_bessel_matrix(k, l, R):
-    import timeit
-    import numpy as np
-    print("generating Bessel function matrix...")
-    t0 = timeit.default_timer()
-    len_R = len(R)
-    len_k = len(k)
-    Jm = np.empty((len_R, len_k), dtype=complex)
-    for i in range(len_R):
-        for j in range(len_k):
-            Jm[i, j] = bessel_j(l, k[j] * R[i])
-    print("done ({0:.4} s).".format(timeit.default_timer() - t0))
-    print("done.")
-    return Jm
-
 def plot_bessel():
     import numpy as np
     from numpy import abs
     R = np.linspace(0, 20, 150)
     fig, axes = simple_figure()
-    axes.plot(R, abs(R * map_bessel_j(l, R)) ** 2)
-    axes.plot(R, abs(R * map_bessel_j(l, (.8 + 0.1j) * R)) ** 2)
+    axes.plot(R, abs(R * bessel_j(l, R)) ** 2)
+    axes.plot(R, abs(R * bessel_j(l, (.8 + 0.1j) * R)) ** 2)
     axes.set_ylim(0, 10)
     return fig
 
@@ -258,7 +244,7 @@ def simple_run():
     axes.scatter(eig_k.real, eig_k.imag, 50, "red", linewidth=0)
 
     R = np.linspace(0.001, 200, 2000)
-    Jm = calc_bessel_matrix(k, l, R)
+    Jm = bessel_j(l, np.outer(R, k))
 
     fig2, axes = simple_figure()
     for E, phi_ in zip(Es, phis.T):

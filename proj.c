@@ -27,8 +27,8 @@ static double_complex integrand(double R, const void *ctx)
     const struct integrand_params *p =
         (const struct integrand_params *)ctx;
     return R * R *
-        sf_bessel_jl((int)p->l, p->k1 * R) *
-        sf_bessel_jl((int)p->l, p->k2 * R) *
+        spherical_bessel_jl((int)p->l, p->k1 * R) *
+        spherical_bessel_jl((int)p->l, p->k2 * R) *
         woods_saxon(R, p->ws);
 }
 
