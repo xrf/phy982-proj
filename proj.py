@@ -46,11 +46,29 @@ def bessel_j(l, z):
         j = j.reshape(z.shape)
     return j
 
-def simple_figure():
-    import matplotlib.pyplot as plt
-    fig  = plt.figure()
-    axes = fig.add_subplot(111)
-    return fig, axes
+# ----------------------------------------------------------------------------
+# Plotting
+# ----------------------------------------------------------------------------
+
+class VirtualAxes(object):
+    def __init__(self):
+        self._actions = []
+    def __getattr__(self, name):
+        return self.call(name)
+    def call(self, name):
+        def inner(*args, **kwargs):
+            self._actions.append(lambda axes:
+                                 getattr(axes, name)(*args, **kwargs))
+        return inner
+    def apply(self, axes):
+        for action in self._actions:
+            action(axes)
+    def to_figure(self):
+        import matplotlib.pyplot as plt
+        figure = plt.figure()
+        axes = figure.add_subplot(111)
+        self.apply(axes)
+        return figure
 
 # ----------------------------------------------------------------------------
 # Integration
@@ -249,21 +267,21 @@ def plot_bessel():
     import numpy as np
     from numpy import abs
     R = np.linspace(0, 20, 150)
-    fig, axes = simple_figure()
+    axes = VirtualAxes()
     axes.plot(R, abs(R * bessel_j(l, R)) ** 2)
     axes.plot(R, abs(R * bessel_j(l, (.8 + 0.1j) * R)) ** 2)
     axes.set_ylim(0, 10)
-    return fig
+    return axes
 
 def plot_interactions(V, l_range, mu2):
     import numpy as np
     R = np.linspace(0.1, 10)
-    fig, axes = simple_figure()
+    axes = VirtualAxes()
     for l in l_range:
         axes.plot(R, V_eff(V, l, mu2)(R), label=str(l))
     axes.set_ylim((-70, 70))
     axes.legend()
-    return fig
+    return axes
 
 def solve(mu2, ws, l, R_max, count, k_start, ka, kb, k_max,
           abs_err=1e-8, rel_err=1e-8, gk_limit=50,
@@ -308,32 +326,32 @@ def simple_run(pool=None):
     print(Es)
 
     eig_k = sqrt(mu2 * Es + 0j)
-    fig1, axes = simple_figure()
-    axes.scatter(k.real, k.imag, 50, "blue", linewidth=0)
-    axes.scatter(eig_k.real, eig_k.imag, 50, "red", linewidth=0)
+    axes1 = VirtualAxes()
+    axes1.scatter(k.real, k.imag, 50, "blue", linewidth=0)
+    axes1.scatter(eig_k.real, eig_k.imag, 50, "red", linewidth=0)
 
     R = np.linspace(0.001, 200, 2000)
     Jm = bessel_j(l, np.outer(R, k))
 
-    fig2, axes = simple_figure()
+    axes2 = VirtualAxes()
     for E, phi_ in zip(Es, phis.T):
         if not (abs(E - (1.346-0.1118j)) < 0.1 or E < 0):
            continue
         phi = sqrt(w) * k * phi_
         u = R * 1j ** l * sqrt(2 / pi) * np.dot(Jm, phi)
 
-        axes.plot(R, V_eff(V, l, mu2)(R) * .01, label="V")
-        axes.plot(R, abs(u)**2, label=repr(E))
-        axes.set_ylim((-.6, .6))
-        axes.legend()
+        axes2.plot(R, V_eff(V, l, mu2)(R) * .01, label="V")
+        axes2.plot(R, abs(u)**2, label=repr(E))
+        axes2.set_ylim((-.6, .6))
+        axes2.legend()
 
-    return fig1, fig2
+    return axes1, axes2
 
 def convergence_run1(pool=None):
     import matplotlib.cm as cm
     import numpy as np
     from numpy import sqrt
-    fig, axes = simple_figure()
+    axes = VirtualAxes()
     counts = tuple(range(30, 60, 1)) + tuple(range(60, 100, 2))
     colors = cm.rainbow(np.linspace(0, 1, len(counts)))
     for (count, c) in zip(counts, colors):
@@ -353,12 +371,12 @@ def convergence_run1(pool=None):
         axes.scatter(ek.real, ek.imag, 50, color=c,
                      linewidth=0, label=repr(count))
     axes.legend()
-    return fig
+    return axes
 
 def convergence_run2(pool=None):
     import numpy as np
     from numpy import abs, sqrt
-    fig, axes = simple_figure()
+    axes = VirtualAxes()
     xs = np.linspace(.02, .1, 9)
     k_last = None
     changes = []
@@ -382,7 +400,7 @@ def convergence_run2(pool=None):
         k_last = k
     axes.plot(xs[1:], changes)
     axes.set_yscale("log")
-    return fig
+    return axes
 
 A  = 10                        # (mass of core)
 ws = WoodsSaxonParams(
@@ -397,7 +415,10 @@ V   = get_woods_saxon(ws)
 pool = multiprocessing.Pool()
 print("note: using {0} threads.".format(multiprocessing.cpu_count()))
 
-simple_figs = simple_run(pool=pool)
-convergence_fig1 = convergence_run1(pool=pool)
-convergence_fig2 = convergence_run2(pool=pool)
+simple_plots = simple_run(pool=pool)
+convergence_plot1 = convergence_run1(pool=pool)
+convergence_plot2 = convergence_run2(pool=pool)
+
+for axes in simple_plots + ():
+    axes.to_figure()
 plt.show()
