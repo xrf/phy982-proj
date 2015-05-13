@@ -116,6 +116,8 @@ def run_interruptibly(func):
     thread.start()
     while thread.is_alive():
         thread.join(.1)
+    if not ret:
+        raise Exception("background thread failed")
     return ret[0]
 
 def ctypes_vector(x):
