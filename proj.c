@@ -11,8 +11,7 @@ struct woods_saxon_params {
     double V0, Rws, aws;
 };
 
-static double_complex woods_saxon(double_complex R,
-                                  const struct woods_saxon_params *p)
+static double_complex woods_saxon(double R, const struct woods_saxon_params *p)
 {
     return p->V0 / (1 + exp((R - p->Rws) / p->aws));
 }

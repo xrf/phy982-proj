@@ -3,7 +3,7 @@
 .SUFFIXES: .c .o .pdf .png .svg
 
 CFLAGS=-Wall -fPIC -g -O2 -std=c99
-LIBS=-lm -lslatec
+LIBS=-lm -llapack -lslatec
 
 all: index.html paper.pdf
 

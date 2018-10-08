@@ -23,7 +23,7 @@ Dependencies
 
 ### Figures (required for both paper and presentation)
 
-  - [Inkscape](http://pandoc.org) (tested on 0.91)
+  - [Inkscape](https://inkscape.org) (tested on 0.91)
 
 ### Paper
 
@@ -38,17 +38,19 @@ Dependencies
 
 ### Presentation
 
-  - [Pandoc](http://pandoc.org) (tested on 1.13.2.1)
+  - [Pandoc](https://pandoc.org) (tested on 1.13.2.1)
 
 ### Calculations
 
+  - [Lapack](https://netlib.org/lapack)
+
   - [Python](https://python.org) 3.4+ or 2.7+
 
-      - [matplotlib](http://matplotlib.org)
-      - [numpy](http://numpy.org)
-      - [scipy](http://scipy.org)
+      - [matplotlib](https://matplotlib.org)
+      - [numpy](https://numpy.org)
+      - [scipy](https://scipy.org)
 
-  - [Slatec](http://netlib.org/slatec) (tested on 4.1)
+  - [Slatec](https://netlib.org/slatec) (tested on 4.1)
 
 [1]: https://people.nscl.msu.edu/~nunes/phy982/phy982web2015.htm
 [a]: https://xrf.github.io/phy982-proj/paper.pdf
